@@ -1,0 +1,68 @@
+
+<!doctype html>
+<html>
+
+  <head>
+    <link rel="import" href="bower_components/polymer/polymer.html">
+    <link rel="import" href="rs-container.html">
+  </head>
+
+  <body>
+
+    <polymer-element name='x-log'>
+      <script>
+        Polymer({
+          ready: function() {
+            console.log('message');
+          }
+        });
+      </script>
+    </polymer-element>
+
+
+    <!--
+
+      Declarative Example:
+
+      Only two messages will fire because x-logs' inside x-container are
+      just simple divs
+
+    -->
+    <x-log></x-log>
+
+    <rs-container downgrade="x-log">
+      <x-log>
+        <x-log></x-log>
+      </x-logner>
+    </rs-container>
+
+    <x-log></x-log>
+
+    <!--
+
+      Imperative Example:
+
+      Only two messages will fire because 1 x-log is downgraded for consutrction inside x-container are
+      just simple divs
+
+    -->
+    <script>
+
+      window.addEventListener('polymer-ready', function() {
+        var RS = window.RS;
+
+        console.log('imperative example');
+
+        document.createElement('x-log');
+        RS.downgrade('x-log');
+        document.createElement('x-log');
+        RS.upgrade('x-log');
+        document.createElement('x-log');
+      });
+
+    </script>
+
+  </body>
+
+</html>
+
