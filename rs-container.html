@@ -1,0 +1,68 @@
+/*
+ * Copyright (c) 2014 Dane O'Connor. All rights reserved.
+ * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+ */
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<polymer-element name='rs-container'>
+  <script>
+    (function() {
+      // Cache original polymer createdCallback for later use
+      var _created = Polymer.api.instance.base.createdCallback;
+
+      // Setup RS namespace
+      var RS = window.RS = window.RS || {};
+
+      // Datastore for globally downgraded elements
+      RS.downgraded = [];
+
+      // Add an element to the global downgrade store
+      RS.downgrade = function(elementName) {
+        return this.downgraded.push(elementName);
+      };
+
+      // Remove an element from the global downgrade store
+      RS.upgrade = function(elementName) {
+        var idx = this.downgraded.indexOf(elementName)
+        return this.downgraded.splice(idx, 1);
+      };
+
+
+      /**
+       * Monkey patch Polymer's createdCallback to support element downgrading.
+       *
+       * When an element name is found in the downgrade list, skip polymer
+       * construction and create a simple HTMLElement; otherwise, continue 
+       * with Polymer * initialization.
+       */
+      Polymer.api.instance.base.createdCallback = function() {
+        var downgraded = [];
+        var current = this.parentNode;
+        var attr = 'downgrade'
+        var containerName = 'rs-container';
+
+        // walk hierarchy for downgrade containers and merge downgrade lists
+        while(current) {
+          if (current.localName === containerName) {
+            if(current.getAttribute(attr)) {
+              downgraded = downgraded.concat(current.getAttribute(attr).split(' '));
+            }
+          }
+          current = current.parentNode;
+        }
+
+        // merge global downgrade list
+        downgraded = downgraded.concat(RS.downgraded);
+
+        if (downgraded.indexOf(this.localName) >= 0 ) {
+          // do nothing, effectivley making this polymer element a div
+        } else {
+          _created.call(this);
+        }
+      }
+
+      Polymer({});
+    })();
+
+  </script>
+</polymer-element>
