@@ -1,9 +1,7 @@
-# <rs-container>
+# rs-container
 
-This element makes testing your Polymer components easier!
-
-Use this element to temporarily transform polymer elements into simple 
-div's for easier stubing and testing.
+Temporarily transform polymer components into basic HTMLElements for
+easy stubbing.
 
 # Usage
 
@@ -25,7 +23,12 @@ window.RS.upgrade('x-api');
 
 # Case
 
-Suppose we have the following elements:
+When you drop a polymer component on your page it will go through its
+entire lifecycle and load dependencies. This is problematic if you want
+to inject custom behavior into a components dependencies for testing
+purposes.
+
+More concretely, suppose we've defined the following elements:
 
 ```
 
@@ -38,10 +41,13 @@ Suppose we have the following elements:
 
 ```
 
-When you drop `x-model` on the page for a test it will create `x-api`
-which will go through its entire lifecycle and load its dependencies. If
-this is a heavy operation, or an operation that has side effects, this
-makes testing difficult. We want `x-api` to be dump for our test.
+If we drop `x-model` on the page, `x-api` is fully loaded with lifecycle
+methods already called before we get our first reference to it. This
+makes stubbing for tests difficult. Even more complicating, the browser
+only lets us define a custom element once, so it's not like we can
+redefine what `x-api` means in each of our tests.
+
+We need a mechanism to stub `x-api` BEFORE x-model is created.
 
 Use `rs-container`!
 
